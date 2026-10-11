@@ -2,6 +2,11 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <climits>
+#include <unordered_set>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -17,12 +22,21 @@ struct Edge {
     int capacity;
 };
 
+struct Packet{
+    string source;
+    string destination;
+    int size;
+    vector<string> path;
+    int totalLatency;
+};
+
 class Network {
 public:
     void addNode(string id);
     void addEdge(string from, string to, int latency);
     void printNetwork();
-
+    vector<string> findShortestPath(string source, string destination);
+    void sendPacket(string source, string destination);
 private:
     unordered_map<string, vector<Edge>> adjacencyList;
     unordered_map<string, Node> nodes;
