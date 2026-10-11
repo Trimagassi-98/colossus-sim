@@ -29,5 +29,8 @@ int main() {
 
     net.checkNetworkCongestion();
 
+    cout << "\n--- Rerouting Packet ---" << endl;
+    net.reroutePacket("GPU_1", "GPU_4");
+
     return 0;
 }

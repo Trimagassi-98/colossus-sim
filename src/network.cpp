@@ -144,3 +144,88 @@ void Network::checkNetworkCongestion(){
         cout << "Network clear - no congestion detected." << endl;
     }
 }
+bool Network::isPathCongested(vector<string>& path) {
+    for(int i = 0; i < path.size() - 1; i++){
+        string current = path[i];
+        string to = path[i + 1];
+
+        for(auto& edge : adjacencyList[current]){
+            if(edge.destination == to && isEdgeCongested(edge)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void Network::reroutePacket(string source, string destination) {
+    vector<string> currentPath = findShortestPath(source, destination);
+
+    if (!isPathCongested(currentPath)) {
+        cout << "Path is clear, no rerouting needed." << endl;
+        sendPacket(source, destination);
+        return;
+    }
+
+    cout << "\n REROUTING: Congestion detected!" << endl;
+    cout << "Original Path congested: ";
+    for (int i = 0; i < currentPath.size(); i++) {
+        cout << currentPath[i];
+        if (i < currentPath.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+
+    for(auto& [nodeName, edges] : adjacencyList){
+        for(auto& edge : edges){
+            if(isEdgeCongested(edge)){
+                edge.latency = 999;
+            }
+        }
+    }
+    vector<string> newPath = findShortestPath(source, destination);
+    for(auto& [nodeName, edges] : adjacencyList){
+        for(auto& edge : edges){
+            if(edge.latency == 999){
+                edge.latency = 1;
+            }
+        }
+    }
+    if(newPath.empty()){
+        cout << "No alternative path found!" << endl;
+        return;
+    }
+    cout << "New Path found: ";
+    for(int i = 0; i < newPath.size(); i++) {
+        cout << newPath[i];
+        if (i < newPath.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+    Packet packet;
+    packet.source = source;
+    packet.destination = destination;
+    packet.size = rand() % 100 + 1;
+    packet.path = newPath;
+    packet.totalLatency = 0;
+
+    for(int i = 0; i < newPath.size() - 1; i++){
+        string current = newPath[i];
+        string to = newPath[i + 1];
+
+        for(auto& edge : adjacencyList[current]){
+            if(edge.destination == to){
+                edge.currentTraffic += packet.size;
+                packet.totalLatency += edge.latency;
+                break;
+            }
+        }
+    }
+    cout << "\n Packet rerouted successfully!" << endl;
+    cout << "Size: " << packet.size << " MB" << endl;
+    cout << "Route: ";
+    for(int i = 0; i < newPath.size(); i++){
+        cout << newPath[i];
+        if(i < newPath.size() - 1) cout << " -> ";
+    }
+    cout << endl;
+    cout << "Total Latency: " << packet.totalLatency << " ms" << endl;
+}
