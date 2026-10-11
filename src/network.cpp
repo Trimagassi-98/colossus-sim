@@ -116,3 +116,31 @@ void Network::sendPacket(string source, string destination) {
     cout << endl;
     cout << "Total Latency: " << packet.totalLatency << " ms" << endl;
 }
+
+bool Network::isEdgeCongested(Edge& edge) {
+    int threshold = edge.capacity * 0.8;
+    return edge.currentTraffic > threshold;
+}
+
+void Network::checkNetworkCongestion(){
+    cout << "\n --- Congestion Report ---" << endl;
+    bool anyCongestion = false;
+
+    for(auto& [nodeName, edges] : adjacencyList){
+        for(auto& edge : edges){
+            if(isEdgeCongested(edge)){
+                anyCongestion = true;
+                cout << "CONGESTION: " << nodeName
+                     << " -> " << edge.destination << endl;
+                cout << " Traffic: " << edge.currentTraffic
+                        << " MB / " << edge.capacity << " MB capacity" << endl;
+
+                nodes[nodeName].isCongested = true;
+            }
+        }
+    }
+
+    if(!anyCongestion){
+        cout << "Network clear - no congestion detected." << endl;
+    }
+}

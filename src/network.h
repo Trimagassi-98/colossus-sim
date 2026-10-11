@@ -37,6 +37,9 @@ public:
     void printNetwork();
     vector<string> findShortestPath(string source, string destination);
     void sendPacket(string source, string destination);
+    bool isEdgeCongested(Edge& edge);
+    void checkNetworkCongestion();
+    
 private:
     unordered_map<string, vector<Edge>> adjacencyList;
     unordered_map<string, Node> nodes;

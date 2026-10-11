@@ -24,6 +24,10 @@ int main() {
     net.sendPacket("GPU_1", "GPU_4");
     net.sendPacket("GPU_1", "GPU_4");
     net.sendPacket("GPU_1", "GPU_4");
+    net.sendPacket("GPU_1", "GPU_4");
+    net.sendPacket("GPU_1", "GPU_4");
+
+    net.checkNetworkCongestion();
 
     return 0;
 }
